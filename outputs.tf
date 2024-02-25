@@ -17,3 +17,7 @@ output "cluster_security_group_id" {
     description = "Security group ID for AWS EKS Cluster"
     value = module.eks.cluster_security_group_id
 }
+output "jumphost_public_ip" {
+  description = "Public IP address of the EC2 jumphost"
+  value       = aws_instance.jumphost.public_ip
+}
