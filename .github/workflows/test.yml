@@ -1,4 +1,4 @@
-name: Cloudcore IAC
+name: TEST IAC
 
 on:
     push:
