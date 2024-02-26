@@ -22,7 +22,7 @@ resource "aws_instance" "jumphost" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.instance_keypair
-  security_groups        = [aws_security_group.jumphost_sg.name]
+  vpc_security_group_ids = [aws_security_group.jumphost_sg.id]
   subnet_id              = tolist(module.vpc.public_subnets)[0]
   user_data = templatefile("./install-tools.sh", {})
 
