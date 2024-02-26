@@ -37,8 +37,7 @@ jobs:
 
         - name: Terraform Init
           id: init
-          run: terraform init -backend-config
-            "bucket=$BUCKET_TF_STATE"
+          run: terraform init -backend-config "bucket=$BUCKET_TF_STATE"
 
         - name: Terraform Format
           id: fmt
@@ -59,7 +58,7 @@ jobs:
 
         - name: Terraform Apply
           id: apply
-          if: github.ref == 'ref/heads/master' && github.event_name == 'push'
+          if: github.ref == 'refs/heads/master' && github.event_name == 'push'
           run: terraform apply -auto-approve -input=false -parallelism=1 planfile
 
         - name: Configure AWS Credential
