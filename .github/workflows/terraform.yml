@@ -2,15 +2,15 @@ name: Cloudcore IAC
 
 on:
     push:
-        branches: 
-            - master
-        paths: 
-            - terraform/**
+      branches: 
+        - master
+      paths: 
+        - terraform/**
     pull_request:
-        branches: 
-            - master
-        paths: 
-            - terraform/**
+      branches: 
+        - master
+      paths: 
+        - terraform/**
 env:
     # credentials for deployment to AWS
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
