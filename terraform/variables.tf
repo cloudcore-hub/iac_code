@@ -21,3 +21,9 @@ variable "instance_type" {
   type        = string
   default     = "t2.large"
 }
+
+variable "instance_keypair" {
+  description = "EC2 keypair"
+  type        = string
+  default     = "gitopskey"
+}

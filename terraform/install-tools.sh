@@ -46,3 +46,19 @@ sudo apt install trivy -y
 
 # Intalling Helm
 sudo snap install helm --classic
+
+# Adding Helm repositories
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+# Installing Argo CD
+helm install argocd argo/argo-cd --namespace argocd --create-namespace
+
+# Installing Prometheus
+helm install prometheus prometheus-community/prometheus --namespace monitoring --create-namespace
+
+# Installing Grafana
+helm install grafana grafana/grafana --namespace monitoring --create-namespace
+
