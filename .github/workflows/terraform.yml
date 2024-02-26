@@ -18,7 +18,7 @@ env:
     # S3 bucket for the terraform state. 
     BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
     AWS_REGION: us-east-1
-    EKS_CLUSTER: quiz-eks
+    EKS_CLUSTER: quizapp-eks
 
 jobs:
     terraform:
