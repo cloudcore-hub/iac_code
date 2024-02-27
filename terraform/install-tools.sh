@@ -56,6 +56,7 @@ helm repo update
 # Installing Argo CD with Kubectl
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+sudo apt install jq -y
 
 # Installing Prometheus
 helm install prometheus prometheus-community/prometheus --namespace monitoring --create-namespace
