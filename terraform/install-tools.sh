@@ -53,8 +53,9 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 
-# Installing Argo CD
-helm install argocd argo/argo-cd --namespace argocd --create-namespace
+# Installing Argo CD with Kubectl
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
 
 # Installing Prometheus
 helm install prometheus prometheus-community/prometheus --namespace monitoring --create-namespace
