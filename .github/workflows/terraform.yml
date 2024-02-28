@@ -18,7 +18,6 @@ env:
     # S3 bucket for the terraform state. 
     BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }}
     AWS_REGION: us-east-1
-    EKS_CLUSTER: quizapp-eks
 
 jobs:
     terraform:
@@ -63,34 +62,6 @@ jobs:
           run: terraform apply -auto-approve -input=false -parallelism=1 planfile
 
 
-    aws-job:
-        needs: terraform
-        name: Deploy Load Balancer Controller
-        runs-on: ubuntu-latest
-        steps:
-        - name: Configure AWS Credential
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: ${{ env.AWS_REGION }}
 
-        - name: Get kube config file
-          id: getconfig
-          run: aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER }}
-
-        - name: Configure Load Balancer
-          run: curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
-          
-        - name: Create IAM policy
-          run: aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
-        
-        - name: Install eksctl
-          run: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-            sudo mv /tmp/eksctl /usr/local/bin
-
-        - name: Create OIDC Provider
-          run: eksctl utils associate-iam-oidc-provider --region=${{ env.AWS_REGION }} --cluster=${{ env.EKS_CLUSTER }} --approve
 
         

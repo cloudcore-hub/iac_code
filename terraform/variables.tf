@@ -4,10 +4,41 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "clusterName" {
-  description = "Name of the EKS cluster"
+variable "vpc-name" {
+  description = "VPC Name for our Jumphost server"
   type = string
-  default = "quizapp-eks"
+  default = "Jumphost-vpc"
+}
+
+variable "igw-name" {
+  description = "Internet Gate Way Name for our Jumphost server"
+  type = string
+  default = "Jumphost-igw"
+}
+
+variable "subnet-name" {
+  description = "Subnet Name for our Jumphost server"
+  type = string
+  default = "Jumphost-subnet"
+}
+
+variable "rt-name" {
+  description = "Route Table Name for our Jumphost server"
+  type = string
+  default = "Jumphost-rt"
+}
+
+variable "sg-name" {
+  description = "Security Group for our Jumphost server"
+  type = string
+  default = "Jumphost-sg"
+}
+
+
+variable "iam-role" {
+  description = "IAM Role for the Jumphost Server"
+  type = string
+  default = "Jumphost-iam-role"
 }
 
 variable "ami_id" {
@@ -22,9 +53,15 @@ variable "instance_type" {
   default     = "t2.large"
 }
 
-variable "instance_keypair" {
+variable "key_name" {
   description = "EC2 keypair"
   type        = string
   default     = "gitopskey"
+}
+
+variable "instance_name" {
+  description = "EC2 Instance name for the jumphost server"
+  type        = string
+  default     = "Jumphost-server"
 }
 #

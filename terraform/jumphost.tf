@@ -1,33 +1,16 @@
-resource "aws_security_group" "jumphost_sg" {
-  name        = "jumphost-sg"
-  description = "Security group for jumphost"
-  vpc_id      = module.vpc.vpc_id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_instance" "jumphost" {
+resource "aws_instance" "ec2" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
-  key_name               = var.instance_keypair
-  vpc_security_group_ids = [aws_security_group.jumphost_sg.id]
-  subnet_id              = tolist(module.vpc.public_subnets)[0]
-  associate_public_ip_address = true
+  key_name               = var.key_name
+  subnet_id              = aws_subnet.public-subnet.id
+  vpc_security_group_ids = [aws_security_group.security-group.id]
+  iam_instance_profile = aws_iam_instance_profile.instance-profile.name
+  root_block_device {
+    volume_size = 30
+  }
   user_data = templatefile("./install-tools.sh", {})
 
   tags = {
-    Name = "Jumphost-server"
+    Name = var.instance_name
   }
 }
