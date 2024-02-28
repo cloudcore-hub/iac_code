@@ -84,7 +84,12 @@ jobs:
           
         - name: Create IAM policy
           run: aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
-          
+        
+        - name: Install eksctl
+          run: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+
         - name: Create OIDC Provider
           run: eksctl utils associate-iam-oidc-provider --region=${{ env.AWS_REGION }} --cluster=${{ env.EKS_CLUSTER }} --approve
 
