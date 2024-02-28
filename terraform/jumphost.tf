@@ -24,6 +24,7 @@ resource "aws_instance" "jumphost" {
   key_name               = var.instance_keypair
   vpc_security_group_ids = [aws_security_group.jumphost_sg.id]
   subnet_id              = tolist(module.vpc.public_subnets)[0]
+  associate_public_ip_address = true
   user_data = templatefile("./install-tools.sh", {})
 
   tags = {
