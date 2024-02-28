@@ -93,18 +93,4 @@ jobs:
         - name: Create OIDC Provider
           run: eksctl utils associate-iam-oidc-provider --region=${{ env.AWS_REGION }} --cluster=${{ env.EKS_CLUSTER }} --approve
 
-        - name: Create Service Account
-          run: eksctl create iamserviceaccount --cluster=${{ env.EKS_CLUSTER}} --namespace=kube-system --name=aws-load-balancer-controller --role-name AmazonEKSLoadBalancerControllerRole --attach-policy-arn=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/AWSLoadBalancerControllerIAMPolicy --approve --region=${{ env.AWS_REGION}}
-          env:
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_REGION: us-east-1
-            EKS_CLUSTER: quizapp-eks
-            AWS_DEFAULT_REGION: us-east-1
-
-        - name: Deploy AWS Load Balancer Controller
-          run: |
-            sudo snap install helm --classic
-            helm repo add eks https://aws.github.io/eks-charts
-            helm repo update eks
-            helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=my-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
+        
