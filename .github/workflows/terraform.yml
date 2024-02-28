@@ -62,6 +62,12 @@ jobs:
           if: github.ref == 'refs/heads/master' && github.event_name == 'push'
           run: terraform apply -auto-approve -input=false -parallelism=1 planfile
 
+
+    aws-job:
+        needs: terraform
+        name: Deploy Load Balancer Controller
+        runs-on: ubuntu-latest
+        steps:
         - name: Configure AWS Credential
           uses: aws-actions/configure-aws-credentials@v4
           with:
@@ -71,5 +77,23 @@ jobs:
 
         - name: Get kube config file
           id: getconfig
-          if: steps.apply.outcome == 'success'
           run: aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER }}
+
+        - name: Configure Load Balancer
+          run: curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
+          
+        - name: Create IAM policy
+          run: aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+          
+        - name: Create OIDC Provider
+          run: eksctl utils associate-iam-oidc-provider --region=${{ env.AWS_REGION }} --cluster=${{ env.EKS_CLUSTER }} --approve
+
+        - name: Create Service Account
+          run: eksctl create iamserviceaccount --cluster=${{ env.EKS_CLUSTER}} --namespace=kube-system --name=aws-load-balancer-controller --role-name AmazonEKSLoadBalancerControllerRole --attach-policy-arn=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/AWSLoadBalancerControllerIAMPolicy --approve --region=${{ env.AWS_REGION}}
+
+        - name: Deploy AWS Load Balancer Controller
+          run: |
+            sudo snap install helm --classic
+            helm repo add eks https://aws.github.io/eks-charts
+            helm repo update eks
+            helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=my-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
