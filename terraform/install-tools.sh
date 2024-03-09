@@ -14,8 +14,9 @@ sudo apt upgrade -y
 
 # Install Docker 
 sudo apt install docker.io -y
-sudo usermod -aG docker $USER
+sudo usermod -aG docker ubuntu
 sudo systemctl enable --now docker 
+
 # Wait for Docker to initialize
 sleep 10
 
