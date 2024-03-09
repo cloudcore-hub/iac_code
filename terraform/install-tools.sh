@@ -1,14 +1,23 @@
 #!/bin/bash
 # For Ubuntu 22.04
+
+set -e # Exit script immediately on first error.
+
+# Log all output to file
+exec >> /var/log/init-script.log 2>&1
+
+echo "Starting initialization script..."
+
+# Update system
 sudo apt update -y
+sudo apt upgrade -y
 
 # Install Docker 
 sudo apt install docker.io -y
 sudo usermod -aG docker $USER
 sudo systemctl enable --now docker 
-
-# Run Docker Container of Sonarqube
-docker run -d  --name sonar -p 9000:9000 sonarqube:lts-community
+# Wait for Docker to initialize
+sleep 10
 
 # Install AWS CLI
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -17,16 +26,13 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 # Install Kubectl
-sudo apt update
-sudo apt install curl -y
-sudo curl -LO "https://dl.k8s.io/release/v1.28.4/bin/linux/amd64/kubectl"
-sudo chmod +x kubectl
-sudo mv kubectl /usr/local/bin/
-kubectl version --client
+sudo apt install -y apt-transport-https ca-certificates curl
+curl -fsSLo kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 
 # Install eksctl
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/$(curl --silent "https://api.github.com/repos/weaveworks/eksctl/releases/latest" | grep -oP '"tag_name": "\K(.*)(?=")')/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 
@@ -59,11 +65,13 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 # Install Prometheus
-helm install prometheus prometheus-community/prometheus --namespace monitoring --create-namespace
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
 
 # Install Grafana
 helm install grafana grafana/grafana --namespace monitoring --create-namespace
 
 # Install ingress-nginx
 helm install ingress-nginx ingress-nginx/ingress-nginx
+
+echo "Initialization script completed successfully."
 
