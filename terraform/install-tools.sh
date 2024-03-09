@@ -10,7 +10,6 @@ echo "Starting initialization script..."
 
 # Update system
 sudo apt update -y
-sudo apt upgrade -y
 
 # Install Docker 
 sudo apt install docker.io -y
@@ -27,13 +26,15 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 # Install Kubectl
-sudo apt install -y apt-transport-https ca-certificates curl
-curl -fsSLo kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
+sudo apt update
+sudo apt install curl -y
+sudo curl -LO "https://dl.k8s.io/release/v1.28.4/bin/linux/amd64/kubectl"
+sudo chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+kubectl version --client
 
 # Install eksctl
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/$(curl --silent "https://api.github.com/repos/weaveworks/eksctl/releases/latest" | grep -oP '"tag_name": "\K(.*)(?=")')/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 
